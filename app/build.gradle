@@ -1,0 +1,84 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        applicationId "com.zk.ch34xuart"
+        minSdkVersion 26
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+    signingConfigs {
+        myConfig {
+            storeFile file('f202_mca.keystore')
+            storePassword 'android'
+            keyAlias 'android'
+            keyPassword 'android'
+        }
+    }
+
+
+    buildTypes {
+        debug {
+            //混淆
+            minifyEnabled false
+            //Zipalign优化
+            zipAlignEnabled true
+            // 移除无用的resource文件
+            shrinkResources false
+            signingConfig signingConfigs.myConfig
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            //混淆
+            minifyEnabled false
+            //Zipalign优化
+            zipAlignEnabled true
+            // 移除无用的resource文件
+            shrinkResources false
+            //     abortOnError false
+            signingConfig signingConfigs.myConfig
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            def fileName
+            def date = new Date()
+            def formattedDate = date.format('yyyyMMdd')
+            if(variant.buildType.name.equals('release')) {
+                fileName = "CH34xUart" + "-V" +"${variant.mergedFlavor.versionName}_${formattedDate}.apk"
+            }else if(variant.buildType.name.equals('debug')){
+                fileName = "CH34xUart" + "-V" +"${variant.mergedFlavor.versionName}_${formattedDate}.apk"
+            }
+            outputFileName = fileName
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation files('libs/CH34xUARTDriver.jar')
+}
